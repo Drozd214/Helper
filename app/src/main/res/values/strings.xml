@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Helper</string>
+
+    <string name="tasks_menu">Tasks</string>
+    <string name="weather_menu">Weather</string>
+
+    <string name="task_text">Task</string>
+    <string name="date_text">Date</string>
+    <string name="done_text">Done?</string>
+    <string name="delete_text">Delete</string>
+    <string name="save_text">Save</string>
+
+    <string name="task_hint">Input task here</string>
+    <string name="date_hint">Input date here</string>
+    <string name="time_hint">Input time here</string>
+
+    <string name="date_picker_title">Pick the date</string>
+    <string name="time_picker_title">Pick the time</string>
+
+    <string name="close_alert_title">Are you sure?</string>
+    <string name="close_alert_text">Close without saving?</string>
+
+</resources>
