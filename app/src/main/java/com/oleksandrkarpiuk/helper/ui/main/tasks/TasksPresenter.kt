@@ -2,13 +2,14 @@ package com.oleksandrkarpiuk.helper.ui.main.tasks
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.oleksandrkarpiuk.helper.data.repositories.tasks.TasksRepository
 import com.oleksandrkarpiuk.helper.database.daos.TaskDao
 import com.oleksandrkarpiuk.helper.database.models.Task
 import com.oleksandrkarpiuk.helper.ui.base.mvp.presenters.BasePresenter
 
 class TasksPresenter(
     private val view: TasksContract.View,
-    private val tasksDao: TaskDao
+    private val tasksRepository: TasksRepository
 ): BasePresenter(), TasksContract.ActionListener {
 
 
@@ -18,7 +19,7 @@ class TasksPresenter(
 
 
     override fun init() {
-        tasks = tasksDao.getTasks()
+        tasks = tasksRepository.getTasks()
     }
 
 
@@ -34,7 +35,7 @@ class TasksPresenter(
 
     override fun onItemCheckChanged(position: Int, isChecked: Boolean) {
         val newTask = tasks.value!![position]
-        tasksDao.updateTask(newTask.copy(isDone = isChecked))
+        tasksRepository.updateTask(newTask.copy(isDone = isChecked))
     }
 
 

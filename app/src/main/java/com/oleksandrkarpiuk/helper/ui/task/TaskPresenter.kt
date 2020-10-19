@@ -1,5 +1,6 @@
 package com.oleksandrkarpiuk.helper.ui.task
 
+import com.oleksandrkarpiuk.helper.data.repositories.tasks.TasksRepository
 import com.oleksandrkarpiuk.helper.database.daos.TaskDao
 import com.oleksandrkarpiuk.helper.database.models.Task
 import com.oleksandrkarpiuk.helper.ui.base.mvp.presenters.BasePresenter
@@ -11,7 +12,7 @@ import java.time.LocalTime
 
 class TaskPresenter(
     private val view: TaskContract.View,
-    private val taskDao: TaskDao,
+    private val tasksRepository: TasksRepository,
     private val dateTimeStringFormatter: DateTimeStringFormatter
 ): BasePresenter(), TaskContract.ActionListener {
 
@@ -73,13 +74,13 @@ class TaskPresenter(
             } else { null }
         }
 
-        taskDao.addNewTask(task)
+        tasksRepository.saveTask(task)
         view.closeActivity()
     }
 
 
     override fun onDeleteMenuBtnClicked() {
-        taskDao.deleteTask(task)
+        tasksRepository.deleteTask(task)
         view.closeActivity()
     }
 

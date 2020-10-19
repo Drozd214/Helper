@@ -1,6 +1,6 @@
 package com.oleksandrkarpiuk.helper.network
 
-abstract class WeatherNetwork {
+abstract class WeatherRestAPI {
 
     companion object {
 

@@ -1,5 +1,7 @@
 package com.oleksandrkarpiuk.helper.di.subcomponents.fragments
 
+import com.oleksandrkarpiuk.helper.data.repositories.tasks.TasksRepository
+import com.oleksandrkarpiuk.helper.data.repositories.tasks.TasksRepositoryImpl
 import com.oleksandrkarpiuk.helper.database.daos.TaskDao
 import com.oleksandrkarpiuk.helper.ui.main.tasks.TasksContract
 import com.oleksandrkarpiuk.helper.ui.main.tasks.TasksFragment
@@ -31,9 +33,9 @@ interface TasksComponent {
         @Provides
         fun provideTasksPresenter(
             view: TasksContract.View,
-            tasksDao: TaskDao
+            tasksRepository: TasksRepository
         ): TasksPresenter {
-            return TasksPresenter(view, tasksDao)
+            return TasksPresenter(view, tasksRepository)
         }
     }
 

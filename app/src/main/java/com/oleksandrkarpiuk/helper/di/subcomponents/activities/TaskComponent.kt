@@ -1,5 +1,6 @@
 package com.oleksandrkarpiuk.helper.di.subcomponents.activities
 
+import com.oleksandrkarpiuk.helper.data.repositories.tasks.TasksRepository
 import com.oleksandrkarpiuk.helper.database.daos.TaskDao
 import com.oleksandrkarpiuk.helper.ui.task.TaskActivity
 import com.oleksandrkarpiuk.helper.ui.task.TaskContract
@@ -30,10 +31,10 @@ interface TaskComponent {
         @Provides
         fun provideTaskPresenter(
             view: TaskContract.View,
-            taskDao: TaskDao,
+            tasksRepository: TasksRepository,
             dateTimeStringFormatter: DateTimeStringFormatter
         ): TaskPresenter {
-            return TaskPresenter(view, taskDao, dateTimeStringFormatter)
+            return TaskPresenter(view, tasksRepository, dateTimeStringFormatter)
         }
     }
 

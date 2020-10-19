@@ -28,7 +28,7 @@ class WeatherPresenter(
 
 
     override fun updateWeather(requestParameter: String) {
-        currentWeatherAPI.getRealtimeWeather(requestParameter).enqueue(object: Callback<CurrentWeather> {
+        currentWeatherAPI.getCurrentWeather(requestParameter).enqueue(object: Callback<CurrentWeather> {
 
             override fun onFailure(call: Call<CurrentWeather>, t: Throwable) {
                 view.showToast(t.message.toString())
