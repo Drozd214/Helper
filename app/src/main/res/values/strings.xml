@@ -20,4 +20,6 @@
     <string name="close_alert_title">Are you sure?</string>
     <string name="close_alert_text">Close without saving?</string>
 
+    <string name="location">Location</string>
+
 </resources>
