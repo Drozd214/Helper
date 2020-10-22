@@ -1,21 +1,25 @@
 package com.oleksandrkarpiuk.helper.ui.main.weather
 
+import android.content.Context
+import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.KeyEvent
-import android.view.inputmethod.EditorInfo
-import android.widget.TextView
-import android.widget.Toast
+import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
+import android.widget.LinearLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.oleksandrkarpiuk.helper.HelperApplication
 import com.oleksandrkarpiuk.helper.R
-import com.oleksandrkarpiuk.helper.network.models.Location
-import com.oleksandrkarpiuk.helper.network.models.currentweather.Weather
+import com.oleksandrkarpiuk.helper.network.models.weatherforecast.CurrentWeather
+import com.oleksandrkarpiuk.helper.network.models.weatherforecast.forecast.Forecast
+import com.oleksandrkarpiuk.helper.network.models.weatherforecast.forecast.Hour
 import com.oleksandrkarpiuk.helper.ui.base.fragments.BaseFragment
+import com.oleksandrkarpiuk.helper.ui.utils.DateTimeStringFormatter
+import com.oleksandrkarpiuk.helper.ui.utils.StringProvider
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_weather.*
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.*
+import org.w3c.dom.Text
 import javax.inject.Inject
 
 
@@ -23,6 +27,10 @@ class WeatherFragment: BaseFragment(R.layout.fragment_weather), WeatherContract.
 
 
     @Inject lateinit var presenter: WeatherPresenter
+    @Inject lateinit var stringProvider: StringProvider
+    @Inject lateinit var dateTimeStringFormatter: DateTimeStringFormatter
+
+    private lateinit var forecastHoursAdapter: ForecastHoursAdapter
 
 
 
@@ -36,37 +44,83 @@ class WeatherFragment: BaseFragment(R.layout.fragment_weather), WeatherContract.
 
 
     override fun init() {
+        initRecycleView()
         presenter.init()
 
-        button.setOnClickListener {
-            presenter.updateWeather(locationEt.text.toString())
+        initButtons()
+    }
+
+
+    private fun initRecycleView() = with(hourWeatherRv) {
+        layoutManager = LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
+        adapter = ForecastHoursAdapter(listOf(), dateTimeStringFormatter, stringProvider).also {
+            forecastHoursAdapter = it
         }
     }
 
 
-
-
-
-    override fun initViews(weather: Weather, location: Location) {
-        dayTv.text = LocalDate.now().dayOfWeek.name
-        dateTv.text = LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM d", Locale.ENGLISH))
-
-        locationTv.text = location.name
-
-        Picasso.get().load("http:${weather.condition.iconUrl}")
-            .resize(128, 128)
-            .into(iconImv)
-
-        temperatureTv.text = "${weather.temperatureC}°"
-        weatherTv.text = weather.condition.text
-
-        humidityTv.text = "Humidity ${weather.humidity}%"
-        windSpeedTv.text = "Wind ${weather.windKph * 1000 / 3600} m/s"
+    override fun setDate(date: String, day: String) {
+        currentDateTv.text = date
+        currentDayTv.text = day
     }
 
 
-    override fun showToast(message: String) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    override fun updateScreen(currentWeather: CurrentWeather, forecast: Forecast) {
+        currentTemperatureTv.text = stringProvider.getString(R.string.current_weather_temperature, currentWeather.temperatureC)
+        currentFeelsLikeTv.text = stringProvider.getString(R.string.current_weather_feels_like, currentWeather.feelsLikeC)
+
+        Picasso.get().load("http:${currentWeather.condition.iconUrl}")
+            .resize(100, 100)
+            .into(currentIconImv)
+        currentWeatherTv.text = currentWeather.condition.text
+
+        currentWindSpeedTv.text = stringProvider.getString(R.string.current_weather_wind_speed, currentWeather.windSpeedKph)
+        currentCloudTv.text = stringProvider.getString(R.string.current_weather_cloud_cover, currentWeather.cloudCover)
+
+        currentHumidityTv.text = stringProvider.getString(R.string.current_weather_humidity, currentWeather.humidity)
+        currentPrecipitationTv.text = stringProvider.getString(R.string.current_weather_precipitation, currentWeather.precipitationMm)
+
+        val forecastHours: MutableList<Hour> = mutableListOf()
+
+        for(index in forecast.forecastDays[0].hour.indices step 3) {
+            forecastHours.add(forecast.forecastDays[0].hour[index])
+        }
+
+        forecastHoursAdapter.hoursForecast = forecastHours
+        forecastHoursAdapter.notifyDataSetChanged()
+
+
+    }
+
+
+    private fun initButtons() {
+        locationTv.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(text: Editable?) {
+                presenter.onTextChange(text.toString())
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+        })
+
+        locationTv.setOnItemClickListener { adapterView, view, position, _ ->
+            presenter.updateWeather(adapterView.getItemAtPosition(position).toString())
+            (requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+                .hideSoftInputFromWindow(view.applicationWindowToken, 0)
+        }
+    }
+
+
+    override fun setAutoCompleteAdapter(locationList: MutableList<String>) {
+        val adapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_list_item_1, locationList)
+        locationTv.setAdapter(adapter)
+        adapter.notifyDataSetChanged()
     }
 
 

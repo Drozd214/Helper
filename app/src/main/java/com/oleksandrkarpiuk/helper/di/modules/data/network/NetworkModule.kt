@@ -1,11 +1,13 @@
 package com.oleksandrkarpiuk.helper.di.modules.data.network
 
 import com.oleksandrkarpiuk.helper.network.WeatherRestAPI.Companion.BASE_URL
-import com.oleksandrkarpiuk.helper.network.models.currentweather.CurrentWeatherAPI
+import com.oleksandrkarpiuk.helper.network.models.searchinglocation.SearchingLocationAPI
+import com.oleksandrkarpiuk.helper.network.models.weatherforecast.WeatherForecastAPI
 import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.POST
 import javax.inject.Singleton
 
 @Module(includes = [
@@ -25,7 +27,16 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideRealtimeWeatherAPI(retrofit: Retrofit): CurrentWeatherAPI {
-        return retrofit.create(CurrentWeatherAPI::class.java)
+    fun provideWeatherForecastAPI(retrofit: Retrofit): WeatherForecastAPI {
+        return retrofit.create(WeatherForecastAPI::class.java)
     }
+
+
+    @Singleton
+    @Provides
+    fun provideSearchingLocationAPI(retrofit: Retrofit): SearchingLocationAPI {
+        return retrofit.create(SearchingLocationAPI::class.java)
+    }
+
+
 }

@@ -1,52 +1,111 @@
 package com.oleksandrkarpiuk.helper.ui.main.weather
 
-import com.oleksandrkarpiuk.helper.network.models.Location
-import com.oleksandrkarpiuk.helper.network.models.currentweather.CurrentWeather
-import com.oleksandrkarpiuk.helper.network.models.currentweather.CurrentWeatherAPI
-import com.oleksandrkarpiuk.helper.network.models.currentweather.Weather
+import android.util.Log
+import com.oleksandrkarpiuk.helper.network.models.searchinglocation.SearchingLocation
+import com.oleksandrkarpiuk.helper.network.models.searchinglocation.SearchingLocationAPI
+import com.oleksandrkarpiuk.helper.network.models.weatherforecast.WeatherForecast
+import com.oleksandrkarpiuk.helper.network.models.weatherforecast.WeatherForecastAPI
+import com.oleksandrkarpiuk.helper.network.models.weatherforecast.Location
+import com.oleksandrkarpiuk.helper.network.models.weatherforecast.CurrentWeather
+import com.oleksandrkarpiuk.helper.network.models.weatherforecast.forecast.Forecast
 import com.oleksandrkarpiuk.helper.ui.base.mvp.presenters.BasePresenter
+import com.oleksandrkarpiuk.helper.ui.utils.DateTimeStringFormatter
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.LocalDate
 
 
 class WeatherPresenter(
     private val view: WeatherContract.View,
-    private val currentWeatherAPI: CurrentWeatherAPI
+    private val weatherForecastAPI: WeatherForecastAPI,
+    private val searchingLocationAPI: SearchingLocationAPI,
+    private val dateTimeStringFormatter: DateTimeStringFormatter
 ) : BasePresenter(), WeatherContract.ActionListener {
 
 
-    private lateinit var weather: Weather
     private lateinit var location: Location
-
+    private lateinit var currentWeather: CurrentWeather
+    private lateinit var forecast: Forecast
 
 
 
     override fun init() {
+        //TODO якщо немає інтернету - витягнути дані з БД
         updateWeather("Polonne")
+
     }
 
 
-    override fun updateWeather(requestParameter: String) {
-        currentWeatherAPI.getCurrentWeather(requestParameter).enqueue(object: Callback<CurrentWeather> {
+     override fun updateWeather(requestParameter: String) {
+        weatherForecastAPI.getWeatherForecast(requestParameter).enqueue(object: Callback<WeatherForecast> {
 
-            override fun onFailure(call: Call<CurrentWeather>, t: Throwable) {
-                view.showToast(t.message.toString())
+            override fun onFailure(call: Call<WeatherForecast>, t: Throwable) {
+                Log.d("onFailure", t.toString())
             }
 
             override fun onResponse(
-                call: Call<CurrentWeather>,
-                response: Response<CurrentWeather>
+                call: Call<WeatherForecast>,
+                response: Response<WeatherForecast>
             ) {
                 if(response.code() == 400) {
                     return
                 }
-                with(response) {
-                    weather = body()!!.weather
-                    location = body()!!.location
+
+                location = response.body()!!.location
+                currentWeather = response.body()!!.currentWeather
+                forecast = response.body()!!.forecast
+
+                updateScreen()
+                //TODO закешувати в БД останній результат
+            }
+        })
+    }
+
+
+    private fun updateScreen() {
+
+        val date = LocalDate.now()
+        val dateString = dateTimeStringFormatter.getShortDateString(date)
+
+        with(view) {
+            setDate(
+                dateTimeStringFormatter.getShortDateString(date),
+                dateTimeStringFormatter.getDayDateString(date)
+            )
+
+            updateScreen(currentWeather, forecast)
+        }
+    }
+
+
+    override fun onTextChange(text: String) {
+        searchingLocationAPI.getSearchingLocationList(text).enqueue(object: Callback<List<SearchingLocation>> {
+            override fun onFailure(call: Call<List<SearchingLocation>>, t: Throwable) {
+
+            }
+
+
+            override fun onResponse(
+                call: Call<List<SearchingLocation>>,
+                response: Response<List<SearchingLocation>>
+            ) {
+
+                if(response.code() == 400) {
+                    return
                 }
 
-                view.initViews(weather, location)
+                if(response.body()!!.isEmpty()) {
+                    return
+                }
+
+                val locationList = mutableListOf<String>()
+
+                for(location in response.body()!!) {
+                    locationList.add(location.name)
+                }
+
+                view.setAutoCompleteAdapter(locationList)
             }
 
         })

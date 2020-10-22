@@ -1,4 +1,4 @@
-package com.oleksandrkarpiuk.helper.network.models.currentweather
+package com.oleksandrkarpiuk.helper.network.models.weatherforecast
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName

@@ -5,6 +5,7 @@
     <color name="colorAccent">#3282b8</color>
 
     <color name="colorCommonBackground">#232931</color>
+    <color name="colorSecondBackground">#333941</color>
 
     <color name="textColor">#ffffff</color>
     <color name="hintColor">#878787</color>

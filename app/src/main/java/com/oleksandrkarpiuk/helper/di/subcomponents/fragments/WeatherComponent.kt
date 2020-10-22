@@ -1,9 +1,11 @@
 package com.oleksandrkarpiuk.helper.di.subcomponents.fragments
 
-import com.oleksandrkarpiuk.helper.network.models.currentweather.CurrentWeatherAPI
+import com.oleksandrkarpiuk.helper.network.models.searchinglocation.SearchingLocationAPI
+import com.oleksandrkarpiuk.helper.network.models.weatherforecast.WeatherForecastAPI
 import com.oleksandrkarpiuk.helper.ui.main.weather.WeatherContract
 import com.oleksandrkarpiuk.helper.ui.main.weather.WeatherFragment
 import com.oleksandrkarpiuk.helper.ui.main.weather.WeatherPresenter
+import com.oleksandrkarpiuk.helper.ui.utils.DateTimeStringFormatter
 import dagger.BindsInstance
 import dagger.Module
 import dagger.Provides
@@ -29,9 +31,16 @@ interface WeatherComponent {
         @Provides
         fun provideWeatherPresenter(
             view: WeatherContract.View,
-            currentWeatherAPI: CurrentWeatherAPI
+            weatherForecastAPI: WeatherForecastAPI,
+            searchingLocationAPI: SearchingLocationAPI,
+            dateTimeStringFormatter: DateTimeStringFormatter
         ): WeatherPresenter {
-            return WeatherPresenter(view, currentWeatherAPI)
+            return WeatherPresenter(
+                view,
+                weatherForecastAPI,
+                searchingLocationAPI,
+                dateTimeStringFormatter
+            )
         }
     }
 
