@@ -20,4 +20,15 @@
     <string name="close_alert_title">Are you sure?</string>
     <string name="close_alert_text">Close without saving?</string>
 
+    <string name="location">Location</string>
+
+    <string name="current_weather_temperature">%.1f°C</string>
+    <string name="current_weather_feels_like">Feels like %.1f°C</string>
+    <string name="current_weather_wind_speed">Wind speed: %.1f km/h</string>
+    <string name="current_weather_cloud_cover">Cloud cover: %d%%</string>
+    <string name="current_weather_humidity">Humidity: %d%%</string>
+    <string name="current_weather_precipitation">Precipitation: %.1f mm</string>
+
+    <string name="forecast_hour_precipitation_chance">Precip: %d%%</string>
+
 </resources>

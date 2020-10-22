@@ -1,11 +1,8 @@
 package com.oleksandrkarpiuk.helper.ui.task
 
 import com.oleksandrkarpiuk.helper.data.repositories.tasks.TasksRepository
-import com.oleksandrkarpiuk.helper.database.daos.TaskDao
 import com.oleksandrkarpiuk.helper.database.models.Task
 import com.oleksandrkarpiuk.helper.ui.base.mvp.presenters.BasePresenter
-import com.oleksandrkarpiuk.helper.ui.main.tasks.TasksContract
-import com.oleksandrkarpiuk.helper.ui.main.tasks.TasksPresenter
 import com.oleksandrkarpiuk.helper.ui.utils.DateTimeStringFormatter
 import java.time.LocalDate
 import java.time.LocalTime
@@ -42,7 +39,7 @@ class TaskPresenter(
             hideTimeViews()
             hideTimeClearBtn()
         } else {
-            setDate(dateTimeStringFormatter.getDateString(task.date)!!)
+            setDate(dateTimeStringFormatter.getFullDateString(task.date)!!)
             showDateClearBtn()
             refreshTimeViews()
         }
